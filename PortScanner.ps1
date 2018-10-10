@@ -1,15 +1,22 @@
 $ip = Read-Host -prompt "Enter IP"
 $port1 = Read-Host -prompt "Enter start of port range"
 $port2 = Read-Host -prompt "Enter end of port range"
-while($port1 <= $port2)
+$port1i = [int]$port1
+$port2i = [int]$port2
+while($port1i -lt ($port2i + 1))
 {
-	try{
-	$socket = New-Object System.Net.Socket.TcpClient($ip, $port1)
-	Write-Host "Port: ", $port1, " Open"
+    try
+    {
+        $socket = New-Object System.Net.Sockets.TcpClient($ip, $port1i)
+        Write-Host "Port: ", [str]$port1i, " Open"
+        $socket.Close()
 	}
-	catch[System.Net.Sockets.SocketException]
+	catch [System.Net.Sockets.SocketException]
 	{
-	Write-Host "Port: ", $port1, " Closed"
+        continue
 	}
-	$port1++
+    finally
+    {
+        $port1i++
+    }
 }
