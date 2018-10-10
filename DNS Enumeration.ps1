@@ -1,8 +1,7 @@
 #DNS Enumeration
 
-$Text = Get-Content -Path txtFile.txt
-$Text.GetType() | Format-Table -AutoSize
-
-for($i = 0; $i -lt $name.length; i++) {
-	Resolve-DnsName "Name: $name[i]"
+foreach($line in Get-Content C:\Users\castr\txtFile.txt) {
+	if($line -match $regex) {
+		Resolve-DnsName $line
+	}
 }
