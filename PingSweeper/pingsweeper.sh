@@ -19,13 +19,10 @@ main() {
             o3=$(( ( $ip >> 8  ) & 255 ))
             o4=$(( $ip & 255 ))
             IP="$o1.$o2.$o3.$o4"
-            ping -c 1 $IP >/dev/null 2>&1
-            if [ $? -eq "0" ]; then
-                echo $IP
-            fi
+            timeout 0.2 ping -c 1 $IP >/dev/null 2>&1 && echo $IP
         done
     elif [ $subnetIdx -ne 0 ]; then
-        # echo "subnet"
+        echo "subnet"
     else
         echo "unrecognized format"
     fi
