@@ -22,7 +22,7 @@ def main():
         print("Scanning " + ip)
         p = sr1(IP(dst=ip)/i, timeout=2, verbose=0) 
         if p == None:
-            fout.write(ip + ' is down\n')
+            fout.write(ip + ': Host is down\n')
             continue
         if p.payload.code == 0:
             fout.write(ip + ': Windows\n')
