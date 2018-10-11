@@ -1,3 +1,18 @@
+
+<#
+$iprange = Read-Host -prompt "Enter IP or IP range"
+if($iprange -contains "-")
+{
+
+}
+$portrange = Read-Host -prompt "Enter port(s)"
+if($portrange -contains "-")
+{
+    $ports = $portrange.split("-")
+    
+}
+#>
+
 $ip = Read-Host -prompt "Enter IP"
 $port1 = Read-Host -prompt "Enter start of port range"
 $port2 = Read-Host -prompt "Enter end of port range"
