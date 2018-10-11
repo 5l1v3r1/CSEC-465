@@ -17,6 +17,11 @@ If ($rangeIdx -ne -1 -and $networkIdx -ne -1) {
     $ips = $ips.ToString().Split('/')
     $network = $ips[0]
     $netmask = $ips[1]
+    $network = ([IPAddress]$network).GetAddressBytes()
+    [Array]::Reverse($network)
+    $network = [uint32]([IPAddress]$network).Address
+    $startIP = $network
+    $endIP = $startIP -bor (([uint32]1 -shl (32 - [uint32]$netmask)) - 1)
 } Else {
     $startIP = ([IPAddress]$ips).GetAddressBytes()
     [Array]::Reverse($startIP)
@@ -45,26 +50,21 @@ If ($portRangeIdx -ne -1) {
     $portList = $args[1]
 }
 
-$ip = [uint32]$startIP
-
 $result = "`nResult:`n"
 
-while($ip -lt ($endIP + 1)) {
+For($ip = [uint32]$startIP ; $ip -lt ([uint32]$endIP + 1); $ip++) {
     $ip1 = ([IPAddress]$ip).GetAddressBytes()
     [Array]::Reverse($ip1)
     $ip1 = ([IPAddress]$ip1).IPAddressToString
     ping -n 1 -w 100 $ip1 | Out-Null
     If ($? -eq $False) {
         echo "$ip1 is down"
-        $ip++
         Continue
     }
     echo "Scanning $ip1"
     $resultString = "${ip1}: "
     If ($portRangeIdx -ne -1) {
-        $port = $startPort
-
-        While($port -lt ($endPort + 1)) {
+        For($port = $startPort; $port -lt ($endPort + 1); $port++) {
             #echo "Scanning $port"
             Try {
                 $socket = New-Object System.Net.Sockets.TcpClient($ip1, $port)
@@ -78,9 +78,7 @@ while($ip -lt ($endIP + 1)) {
                 } ElseIf ($errorCode -eq 10060) {
                     echo "Port $port is filtered"
                 }
-	        } Finally {
-                $port++
-            }
+	        }
         }
     } ElseIf ($portListIdx -ne -1) {
         foreach($port in $portList) {
@@ -101,6 +99,5 @@ while($ip -lt ($endIP + 1)) {
         }
     }
     $result += $resultString + "`n"
-    $ip++
 }
 echo $result
