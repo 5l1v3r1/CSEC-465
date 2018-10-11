@@ -3,6 +3,9 @@ import requests
 import ipaddress
 import sys
 
+scanTimeout = 1
+ports = range(1, 1000)
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python {} <ip-range>|<ip-subnet>".format(sys.argv[0]))
@@ -16,7 +19,13 @@ def main():
     elif sys.argv[1].find('/') != -1:
         network = ipaddress.ip_network(unicode(sys.argv[1]))
         for ip in network:
-            print(ip)        
+            for port in ports:
+                try:
+                    print('scanning http://{}:{}'.format(ip, port))
+                    r = requests.get('http://{}:{}'.format(ip, port), timeout=scanTimeout)
+                    print('{}:{}'.format(ip, port))
+                except:
+                    pass
     elif sys.argv[1].find('-') != -1:
         ips = sys.argv[1].split('-')
         iprange = ipaddress.summarize_address_range(ipaddress.ip_address(unicode(ips[0])), ipaddress.ip_address(unicode(ips[1])))
