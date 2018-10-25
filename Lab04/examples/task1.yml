@@ -1,0 +1,11 @@
+---
+
+- hosts: linux
+  remote_user: me
+
+  tasks:
+    - name: Get IP
+      shell: cat /etc/passwd
+      register: task1_result
+    - debug:
+        var: task1_result.stdout_lines
