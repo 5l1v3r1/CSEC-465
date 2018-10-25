@@ -1,7 +1,6 @@
 ---
 
 - hosts: linux
-  remote_user: me
   tasks:
     - name: Get IP
       shell: ip a
