@@ -1,0 +1,24 @@
+---
+
+- hosts: linux
+  remote_user: me
+  tasks:
+    - name: Add osquery key to apt
+      apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: 1484120AC4E9F8A1A577AEEE97A80C63C9D8B80B
+
+    - name: Add osquery apt repo
+      apt_repository:
+        repo: deb [arch=amd64] https://pkg.osquery.io/deb deb main
+
+    - name: Update apt
+      apt:
+        update_cache: yes
+
+    - name: Install OSquery
+      apt:
+        name: osquery
+
+    - debug:
+        var: task_result.stdout_lines
