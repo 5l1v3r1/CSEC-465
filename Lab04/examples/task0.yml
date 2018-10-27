@@ -13,5 +13,6 @@
     - name: Get IP
       win_command: ipconfig /all
       register: task1_result
+
     - debug:
         var: task1_result.stdout_lines
