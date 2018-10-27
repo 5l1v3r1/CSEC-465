@@ -37,6 +37,10 @@
       win_chocolatey:
         name: osquery
         state: present
+    - name: Enable Windows Event Log for osquery
+      win_command: powershell.exe -
+      args:
+        stdin: Set-ExecutionPolicy Bypadd -Scope Process -Force; C:\\ProgramData\\osquery\\manage-osqueryd.ps1 -installWelManifest
 
     - debug:
         var: task_result.stdout_lines

@@ -1,0 +1,20 @@
+---
+
+- hosts: linux
+  tasks:
+    - name: Test osquery
+      shell: echo "SELECT hostname FROM system_info;" | osqueryi
+      register: task1_result
+    - debug:
+        var: task1_result.stdout_lines
+
+- hosts: windows
+  tasks:
+    - name: Test osquery
+      win_shell: echo SELECT hostname FROM system_info; | osqueryi
+      args:
+        executable: cmd
+      register: task1_result
+
+    - debug:
+        var: task1_result.stdout_lines
