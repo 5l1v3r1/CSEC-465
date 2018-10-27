@@ -1,31 +1,5 @@
 ---
 
-#- hosts: linux
-#  tasks:
-#    - name: Getting Linux hostnames
-#      shell: echo "SELECT hostname FROM system_info;" | osqueryi
-#      register: linux_hostnames
-#    - debug:
-#        var: linux_hostnames.stdout_lines
-#
-#    - name: Getting Linux OS info
-#      shell: echo "SELECT name, patch FROM os_version;" | osqueryi
-#      register: linux_os
-#    - debug:
-#        var: linux_os.stdout_lines
-#
-#    - name: Getting Linux IP addresses
-#      shell: echo "SELECT address FROM interface_addresses;" | osqueryi
-#      register: linux_ip
-#    - debug:
-#        var: linux_ip.stdout_lines
-#
-#    - name: Getting Linux users
-#      shell: echo "SELECT username FROM users;" | osqueryi
-#      register: linux_users
-#    - debug:
-#        var: linux_users.stdout_lines
-#
 - hosts: winserver
   tasks:
     - name: Getting Windows Server installed components
@@ -36,27 +10,34 @@
     - debug:
         var: winserver_installed.stdout_lines
 
-#    - name: Getting Windows OS info
-#      win_shell: echo SELECT name, patch FROM os_version; | osqueryi
-#      args:
-#        executable: cmd
-#      register: win_os
+- hosts: linux
+  tasks:
+    - name: Getting Linux packages
+      shell: echo "SELECT name FROM deb_packages;" | osqueryi
+      register: linux_packages
+    - debug:
+        var: linux_packages.stdout_lines
+
+#    - name: Getting Linux startup items
+#      shell: echo "SELECT name, patch FROM os_version;" | osqueryi
+#      register: linux_startup
 #    - debug:
-#        var: win_os.stdout_lines
-#
-#    - name: Getting Windows IP addresses
-#      win_shell: echo SELECT address FROM interface_addresses; | osqueryi
-#      args:
-#        executable: cmd
-#      register: win_ip
-#    - debug:
-#        var: win_ip.stdout_lines
-#
-#    - name: Getting Windows users
-#      win_shell: echo SELECT username FROM users; | osqueryi
-#      args:
-#        executable: cmd
-#      register: win_users
-#    - debug:
-#        var: win_users.stdout_lines
-#
+#        var: linux_startup.stdout_lines
+
+- hosts: windows
+  tasks:
+    - name: Getting Windows installed softwares
+      win_shell: echo SELECT name FROM programs UNION SELECT name from chocolatey_packages; | osqueryi
+      args:
+        executable: cmd
+      register: win_installed
+    - debug:
+        var: win_installed.stdout_lines
+
+    - name: Getting Windows startup items
+      win_shell: echo SELECT name, path, status, username FROM startup_items; | osqueryi
+      args:
+        executable: cmd
+      register: win_startup
+    - debug:
+        var: win_startup.stdout_lines
