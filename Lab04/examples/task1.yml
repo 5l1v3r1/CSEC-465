@@ -2,16 +2,18 @@
 
 - hosts: linux
   tasks:
-    - name: Get IP
-      shell: ip a
+    - name: Test osquery
+      shell: echo "SELECT hostname FROM system_info;" | osqueryi
       register: task1_result
     - debug:
         var: task1_result.stdout_lines
 
 - hosts: windows
   tasks:
-    - name: Get IP
-      win_command: ipconfig /all
+    - name: Test osquery
+      win_shell: echo SELECT hostname FROM system_info; | osqueryi
+      args:
+        executable: cmd
       register: task1_result
 
     - debug:
