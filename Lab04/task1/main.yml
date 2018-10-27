@@ -1,24 +1,43 @@
 ---
 
 - hosts: linux
-  remote_user: me
   tasks:
     - name: Add osquery key to apt
       apt_key:
         keyserver: keyserver.ubuntu.com
         id: 1484120AC4E9F8A1A577AEEE97A80C63C9D8B80B
+        state: present
 
     - name: Add osquery apt repo
       apt_repository:
         repo: deb [arch=amd64] https://pkg.osquery.io/deb deb main
+        state: present
 
     - name: Update apt
       apt:
         update_cache: yes
+        state: present
 
     - name: Install OSquery
       apt:
         name: osquery
+        state: present
 
     - debug:
         var: task_result.stdout_lines
+
+- hosts: windows
+  tasks:
+    - name: Install Chocolatey
+      win_command: powershell.exe -
+      args:
+        stdin: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) && SET "PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin"
+
+    - name: Install osquery
+      win_chocolatey:
+        name: osquery
+        state: present
+
+    - debug:
+        var: task_result.stdout_lines
+
