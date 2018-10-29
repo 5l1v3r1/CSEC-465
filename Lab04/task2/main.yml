@@ -9,7 +9,7 @@
         var: linux_hostnames.stdout_lines
 
     - name: Getting Linux OS info
-      shell: echo "SELECT name, patch FROM os_version;" | osqueryi
+      shell: echo "SELECT name, major, minor, patch, build FROM os_version;" | osqueryi
       register: linux_os
     - debug:
         var: linux_os.stdout_lines
@@ -37,7 +37,7 @@
         var: win_hostnames.stdout_lines
 
     - name: Getting Windows OS info
-      win_shell: echo SELECT name, patch FROM os_version; | osqueryi
+      win_shell: echo SELECT name, major, minor, patch, build FROM os_version; | osqueryi
       args:
         executable: cmd
       register: win_os
