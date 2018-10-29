@@ -18,11 +18,11 @@
     - debug:
         var: linux_packages.stdout_lines
 
-#    - name: Getting Linux startup items
-#      shell: echo "SELECT name, patch FROM os_version;" | osqueryi
-#      register: linux_startup
-#    - debug:
-#        var: linux_startup.stdout_lines
+    - name: Getting Linux startup items
+      shell: echo "SELECT name, path FROM processes WHERE parent = 1;" | osqueryi
+      register: linux_startup
+    - debug:
+        var: linux_startup.stdout_lines
 
 - hosts: windows
   tasks:

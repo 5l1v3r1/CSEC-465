@@ -1,6 +1,48 @@
 ---
 
-# i. Use the logon_sessions table
-# ii. Use the processes table
-# iii. Use the process_open_sockets table
+- hosts: linux
+  tasks:
+    - name: Getting Linux logon sessions in last 10 days
+      shell: echo "SELECT username, time, host FROM last, ( SELECT unix_time FROM time ) AS tmp WHERE time >= tmp.unix_time - 864000 AND type = 7;" | osqueryi
+      register: linux_logons
+    - debug:
+        var: linux_logons.stdout_lines
+
+    - name: Getting Linux running processes
+      shell: echo "SELECT pid, name, uid, parent, path, on_disk, total_size, user_time, system_time FROM processes;" | osqueryi
+      register: linux_processes
+    - debug:
+        var: linux_processes.stdout_lines
+
+    - name: Getting Linux network connections
+      shell: echo "SELECT * FROM process_open_sockets WHERE remote_port != 80 AND remote_port != 443 AND (family = 2 OR family = 10) AND state != 'LISTEN' AND remote_port != 0;" | osqueryi
+      register: linux_connections
+    - debug:
+        var: linux_connections.stdout_lines
+
+- hosts: windows
+  tasks:
+    - name: Getting Windows logon sessions in last 10 days
+      win_shell: echo "SELECT user, logon_time, logon_domain, logon_sid, upn FROM logon_sessions, ( SELECT unix_time FROM time ) AS tmp WHERE logon_time >= tmp.unix_time - 864000;" | osqueryi
+      args:
+        executable: powershell
+      register: win_logon
+    - debug:
+        var: win_logon.stdout_lines
+
+    - name: Getting Windows running processes
+      win_shell: echo SELECT pid, name, uid, parent, path, on_disk, total_size, user_time, system_time FROM processes; | osqueryi
+      args:
+        executable: cmd
+      register: win_processes
+    - debug:
+        var: win_processes.stdout_lines
+
+    - name: Getting Windows connections
+      win_shell: echo SELECT * FROM process_open_sockets WHERE remote_port != 80 AND remote_port != 443 AND (family = 2 OR family = 10) AND remote_port != 0; | osqueryi
+      args:
+        executable: cmd
+      register: win_connections
+    - debug:
+        var: win_connections.stdout_lines
 
