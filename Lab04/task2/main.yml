@@ -53,7 +53,7 @@
         var: win_ip.stdout_lines
 
     - name: Getting Windows users
-      win_shell: echo SELECT username FROM users; | osqueryi
+      win_shell: echo SELECT username FROM users WHERE type = 'local'; | osqueryi
       args:
         executable: cmd
       register: win_users
